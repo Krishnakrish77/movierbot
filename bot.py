@@ -1,5 +1,7 @@
 import logging
 import logging.config
+from aiohttp import web
+from utils.route import web_server
 
 # Get logging configurations
 logging.config.fileConfig('logging.conf')
@@ -8,7 +10,7 @@ logging.getLogger().setLevel(logging.WARNING)
 from pyrogram import Client, __version__
 from pyrogram.raw.all import layer
 from utils import Media
-from info import SESSION, API_ID, API_HASH, BOT_TOKEN
+from info import SESSION, API_ID, API_HASH, BOT_TOKEN, PORT
 
 
 class Bot(Client):
@@ -29,6 +31,10 @@ class Bot(Client):
         await Media.ensure_indexes()
         me = await self.get_me()
         self.username = '@' + me.username
+        app = web.AppRunner(await web_server())
+        await app.setup()
+        bind_address = "0.0.0.0"       
+        await web.TCPSite(app, bind_address, PORT).start()     
         print(f"{me.first_name} with for Pyrogram v{__version__} (Layer {layer}) started on {me.username}.")
 
     async def stop(self, *args):
