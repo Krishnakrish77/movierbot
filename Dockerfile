@@ -1,4 +1,5 @@
-FROM python:3-slim-buster
+FROM python:3.8.2-slim-buster
+EXPOSE 80
 
 RUN pip install --upgrade pip
 
