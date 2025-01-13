@@ -6,6 +6,8 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 from info import START_MSG, CHANNELS, ADMINS, INVITE_MSG
 from utils import Media
+from utils.database import add_link, get_categories
+from utils.keyboard import generate_inline_category_keyboard
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +21,7 @@ async def start(bot, message):
         buttons = [[
             InlineKeyboardButton('Search Here', switch_inline_query_current_chat=''),
             InlineKeyboardButton('Go Inline', switch_inline_query=''),
+            InlineKeyboardButton('Get Links', callback_data='categories'),
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply(START_MSG, reply_markup=reply_markup)
@@ -105,3 +108,38 @@ async def delete(bot, message):
         await msg.edit('File is successfully deleted from database')
     else:
         await msg.edit('File not found in database')
+
+@Client.on_message(filters.command("addlink") & filters.user(ADMINS))
+async def create_link(client, message):
+    """
+    Add a new link to the database.
+    Usage: /addlink category title url [searchURL]
+    """
+    try:
+        # Extract command arguments safely
+        args = message.command[1:]
+
+        # Check if enough arguments are provided
+        if len(args) < 3:
+            await message.reply_text("Usage: /addlink category title url [searchURL]")
+            return
+
+        # Unpack mandatory arguments
+        category = args[0]
+        title = args[1]
+        url = args[2]
+
+        # Unpack optional argument if present
+        search_url = args[3] if len(args) == 4 else None
+
+        # Add the link to the database
+        success = await add_link(category, title, url, search_url)
+        if success:
+            reply = f"✅ Link added to category '{category}' with title '{title}'."
+            if search_url:
+                reply += f"\n🔍 Search URL: {search_url}"
+            await message.reply_text(reply)
+        else:
+            await message.reply_text("❌ Failed to add the link. Please try again.")
+    except Exception as e:
+        await message.reply_text(f"❌ Error: {str(e)}")

@@ -31,6 +31,16 @@ class Media(Document):
         indexes = ('$file_name', )
         collection_name = COLLECTION_NAME
 
+@instance.register
+class Links(Document):
+    name = fields.StrField(required=True)
+    link = fields.StrField(required=True)
+    category = fields.StrField(required=True)
+    searchURL = fields.StrField(allow_none=True)
+
+    class Meta:
+        indexes = ('$name', )
+
 
 async def save_file(media):
     """Save file in database"""
@@ -100,3 +110,40 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0):
     files = await cursor.to_list(length=max_results)
 
     return files, next_offset
+
+async def add_link(name, link, category, searchURL=None):
+    """
+    Add a new link to the database.
+    :param name: Name or title of the link.
+    :param link: The URL of the link.
+    :param category: Category of the link.
+    :param searchURL: Optional search URL for the link.
+    :return: Success message or error.
+    """
+    try:
+        # Check if the link already exists
+        existing_link = await Links.find_one({"link": link})
+        if existing_link:
+            return f"Link '{name}' already exists in the database."
+
+        # Add the new link
+        new_link = Links(name=name, link=link, category=category, searchURL=searchURL)
+        await new_link.commit()
+        return True
+    except Exception as e:
+        logger.exception(f"Error adding link: {str(e)}")
+        return False
+
+
+# Fetch links by category with pagination
+async def get_links_by_category(category, skip, limit):
+    try:
+        results = await Links.find({"category": category}).skip(skip).limit(limit).to_list(length=limit)
+        return results
+    except Exception as e:
+        logger.exception('Failed to get links by category')
+
+
+# Get distinct categories
+async def get_categories():
+    return await Links.find().distinct("category")
