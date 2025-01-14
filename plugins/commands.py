@@ -21,6 +21,9 @@ async def start(bot, message):
         buttons = [[
             InlineKeyboardButton('Search Here', switch_inline_query_current_chat=''),
             InlineKeyboardButton('Go Inline', switch_inline_query=''),
+        ],
+        [
+            InlineKeyboardButton('Direct Link Bot', url='https://t.me/TeleDirect7Bot'),
             InlineKeyboardButton('Get Links', callback_data='categories'),
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
