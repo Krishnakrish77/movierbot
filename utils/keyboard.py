@@ -11,8 +11,8 @@ def generate_inline_category_keyboard(categories):
 def generate_pagination_keyboard(category, page):
     return InlineKeyboardMarkup([
         [
-            InlineKeyboardButton("⬅️ Previous", callback_data=f"prev_{category}_{page}"),
+            # InlineKeyboardButton("⬅️ Previous", callback_data=f"prev_{category}_{page}"),
             InlineKeyboardButton("Back", callback_data="categories"),
-            InlineKeyboardButton("➡️ Next", callback_data=f"next_{category}_{page}")
+            # InlineKeyboardButton("➡️ Next", callback_data=f"next_{category}_{page}")
         ]
     ])
