@@ -128,17 +128,17 @@ async def create_link(client, message):
             return
 
         # Unpack mandatory arguments
-        category = args[0]
-        title = args[1]
-        url = args[2]
+        name = args[0]
+        link = args[1]
+        category = args[2]
 
         # Unpack optional argument if present
         search_url = args[3] if len(args) == 4 else None
 
         # Add the link to the database
-        success = await add_link(category, title, url, search_url)
+        success = await add_link(name, link, category, search_url)
         if success:
-            reply = f"✅ Link added to category '{category}' with title '{title}'."
+            reply = f"✅ Link added to category '{category}' with title '{name}'."
             if search_url:
                 reply += f"\n🔍 Search URL: {search_url}"
             await message.reply_text(reply)
