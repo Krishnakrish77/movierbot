@@ -116,7 +116,7 @@ async def delete(bot, message):
 async def create_link(client, message):
     """
     Add a new link to the database.
-    Usage: /addlink category title url [searchURL]
+    Usage: /addlink name link category [searchURL]
     """
     try:
         # Extract command arguments safely
@@ -124,7 +124,7 @@ async def create_link(client, message):
 
         # Check if enough arguments are provided
         if len(args) < 3:
-            await message.reply_text("Usage: /addlink category title url [searchURL]")
+            await message.reply_text("Usage: /addlink name link category [searchURL]")
             return
 
         # Unpack mandatory arguments
